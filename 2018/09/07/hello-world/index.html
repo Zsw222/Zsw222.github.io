@@ -228,12 +228,16 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/Typora/">
-                                <span class="chip bg-color">Typora</span>
+                            <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                <span class="chip bg-color">博客</span>
                             </a>
                         
                             <a href="/tags/Markdown/">
                                 <span class="chip bg-color">Markdown</span>
+                            </a>
+                        
+                            <a href="/tags/hexo/">
+                                <span class="chip bg-color">hexo</span>
                             </a>
                         
                     </div>
@@ -282,6 +286,71 @@
 <li>仓库创建成功不会立即生效，需要过一段时间，大概10-30分钟;</li>
 </ol>
 <p>创建成功后，默认会在你这个仓库里生成一些示例页面，以后你的网站所有代码都是放在这个仓库里啦。</p>
+<h2 id="2-配置SSH-Key"><a href="#2-配置SSH-Key" class="headerlink" title="2. 配置SSH Key"></a>2. 配置SSH Key</h2><p>为什么要配置这个呢？因为你提交代码肯定要拥有你的github权限才可以，但是直接使用用户名和密码太不安全了，所以我们使用ssh key来解决本地和服务器的连接问题。</p>
+<ol>
+<li><p><a href="https://blog.csdn.net/suwyer/article/details/86066929" target="_blank" rel="noopener" title="如何查看本机ssh">如何查看本机ssh</a></p>
+</li>
+<li><p>拿到本机ssh key之后，打开你的github主页，进入个人设置 -&gt; SSH and GPG keys -&gt; New SSH key，将刚复制的内容粘贴到key那里，title随便填，保存。</p>
+</li>
+<li><p>测试是否成功 <code>ssh -T git@github.com</code> # 注意邮箱地址不用改</p>
+</li>
+</ol>
+<p>如果提示<code>Are you sure you want to continue connecting (yes/no)?</code>，输入yes，然后会看到：</p>
+<pre><code>Hi XXX! You&#39;ve successfully authenticated, but GitHub does not provide shell access.</code></pre><p>此时你还需要配置：</p>
+<pre><code>$ git config --global user.name &quot;xxx&quot;// 你的github用户名，非昵称
+$ git config --global user.email  &quot;xxx&quot;// 填写你的github注册邮箱</code></pre><h2 id="3-安装Hexo"><a href="#3-安装Hexo" class="headerlink" title="3. 安装Hexo"></a>3. 安装Hexo</h2><p>接下来就是我们的重点，安装hexo啦，安装过程也是十分的简单</p>
+<ol>
+<li><p>先创建一个文件夹（用来存放所有blog的东西），然后cd到该文件夹下。</p>
+</li>
+<li><p>安装hexo命令：<code>npm i -g hexo</code></p>
+</li>
+<li><p>初始化命令：<code>hexo init</code> ，初始化完成之后打开所在的文件夹可以看到以下文件：</p>
+<pre><code> node_modules：是依赖包
+ public：存放的是生成的页面
+ scaffolds：命令生成文章等的模板
+ source：用命令创建的各种文章
+ themes：主题
+ _config.yml：整个博客的配置
+ db.json：source解析所得到的
+ package.json：项目所需模块项目的配置信息</code></pre></li>
+<li><p>启动</p>
+<pre><code> $ hexo g # 生成
+ $ hexo s # 启动服务</code></pre></li>
+</ol>
+<p>执行以上命令之后，hexo就会在public文件夹生成相关html文件，这些文件将来都是要提交到github去的：<br><img src="%5Cimages%5CblogImgs%5Cpublic.jpg" alt="public" title="public"></p>
+<p><code>hexo s</code> 是开启本地预览服务，打开浏览器访问 <a href="http://localhost:4000" target="_blank" rel="noopener">http://localhost:4000</a> 即可看到内容，很多人会碰到浏览器一直在转圈但是就是加载不出来的问题，一般情况下是因为端口占用的缘故，因为4000这个端口太常见了，解决端口冲突问题请参考这篇文章：<br><a href="http://blog.liuxianan.com/windows-port-bind.html" target="_blank" rel="noopener">http://blog.liuxianan.com/windows-port-bind.html</a> </p>
+<h2 id="4-修改主题"><a href="#4-修改主题" class="headerlink" title="4. 修改主题"></a>4. 修改主题</h2><p>既然默认主题很丑，那我们别的不做，首先来替换一个好看点的主题</p>
+<p>该博客用的是 <a href="http://https://github.com/blinkfox/hexo-theme-matery" target="_blank" rel="noopener" title="hexo-theme-matery">hexo-theme-matery</a> 有兴趣的小伙伴可以去该主题下面看对应的配置</p>
+<pre><code>$ cd D:\hexoProject\themes
+$ git clone https://github.com/blinkfox/hexo-theme-matery.git</code></pre><p>修改<code>_config.yml</code>中的<code>theme: landscape</code>改为<code>theme: hexo-theme-matery</code>，然后重新执行<code>hexo g</code>来重新生成。</p>
+<p>如果出现一些莫名其妙的问题，可以先执行<code>hexo clean</code>来清理一下public的内容，然后再来重新生成和发布。</p>
+<h2 id="5-上传到github"><a href="#5-上传到github" class="headerlink" title="5.上传到github"></a>5.上传到github</h2><p>如果你一切都配置好了，发布上传很容易，一句<code>hexo d</code>就搞定，当然关键还是你要把所有东西配置好。</p>
+<p>首先，<code>ssh key</code>肯定要配置好。</p>
+<p>其次，配置<code>_config.yml</code>中有关<code>deploy</code>的部分：</p>
+<p>正确写法：</p>
+<pre><code>deploy:
+  type: git
+  repository: git@github.com:xxx/xxx.github.io.git
+  branch: master</code></pre><p>此时直接执行hexo d的话一般会报如下错误：</p>
+<pre><code>Deployer not found: github 或者 Deployer not found: git</code></pre><p>原因是还需要安装一个插件：</p>
+<pre><code>npm install hexo-deployer-git --save</code></pre><p>安装之后输入<code>hexo d</code>就会将本次有改动的代码全部提交，没有改动的不会</p>
+<h2 id="6-常用hexo命令"><a href="#6-常用hexo命令" class="headerlink" title="6. 常用hexo命令"></a>6. 常用hexo命令</h2><pre><code>hexo new &quot;postName&quot; #新建文章
+hexo new page &quot;pageName&quot; #新建页面
+hexo generate #生成静态页面至public目录
+hexo server #开启预览访问端口（默认端口4000，&#39;ctrl + c&#39;关闭server）
+hexo deploy #部署到GitHub
+hexo help  # 查看帮助
+hexo version  #查看Hexo的版本</code></pre><p>缩写：</p>
+<pre><code>hexo n == hexo new
+hexo g == hexo generate
+hexo s == hexo server
+hexo d == hexo deploy</code></pre><p>组合命令：</p>
+<pre><code>hexo s -g #生成并本地预览
+hexo d -g #生成并上传</code></pre><p><code>_config.yml</code></p>
+<p>这里面都是一些全局配置，每个参数的意思都比较简单明了，所以就不作详细介绍了。</p>
+<p>需要特别注意的地方是，冒号后面必须有一个空格，否则可能会出问题。</p>
+<h2 id="7-参考"><a href="#7-参考" class="headerlink" title="7. 参考"></a>7. 参考</h2><p><a href="https://www.cnblogs.com/liuxianan/p/build-blog-website-by-hexo-github.html" target="_blank" rel="noopener">https://www.cnblogs.com/liuxianan/p/build-blog-website-by-hexo-github.html</a></p>
+<p><a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank" rel="noopener">https://github.com/blinkfox/hexo-theme-matery</a></p>
 
             </div>
             <hr/>
@@ -297,7 +366,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="/about" rel="external nofollow noreferrer">赵奇</a>
+                    <a href="/about" rel="external nofollow noreferrer">雪碧爱可乐</a>
                 </span>
             </div>
             <div class="reprint__type">
@@ -320,7 +389,7 @@
                     本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
                     许可协议。转载请注明来源
-                    <a href="/about" target="_blank">赵奇</a>
+                    <a href="/about" target="_blank">雪碧爱可乐</a>
                     !
                 </span>
             </div>
@@ -345,12 +414,16 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/Typora/">
-                                    <span class="chip bg-color">Typora</span>
+                                <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                                    <span class="chip bg-color">博客</span>
                                 </a>
                             
                                 <a href="/tags/Markdown/">
                                     <span class="chip bg-color">Markdown</span>
+                                </a>
+                            
+                                <a href="/tags/hexo/">
+                                    <span class="chip bg-color">hexo</span>
                                 </a>
                             
                         </div>
@@ -557,12 +630,16 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Typora/">
-                        <span class="chip bg-color">Typora</span>
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
                     </a>
                     
                     <a href="/tags/Markdown/">
                         <span class="chip bg-color">Markdown</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
                     </a>
                     
                 </div>
@@ -610,12 +687,16 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/Typora/">
-                        <span class="chip bg-color">Typora</span>
+                    <a href="/tags/%E5%8D%9A%E5%AE%A2/">
+                        <span class="chip bg-color">博客</span>
                     </a>
                     
                     <a href="/tags/Markdown/">
                         <span class="chip bg-color">Markdown</span>
+                    </a>
+                    
+                    <a href="/tags/hexo/">
+                        <span class="chip bg-color">hexo</span>
                     </a>
                     
                 </div>
