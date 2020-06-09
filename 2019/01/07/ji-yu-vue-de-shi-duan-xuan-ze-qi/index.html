@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="promise, 雪碧爱可乐">
+    <meta name="keywords" content="基于vue的时段选择器, 雪碧爱可乐">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>promise | 雪碧爱可乐</title>
+    <title>基于vue的时段选择器 | 雪碧爱可乐</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -201,12 +201,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/images/featureimages/2.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/images/featureimages/3.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">promise</h1>
+                    <h1 class="description center-align post-title">基于vue的时段选择器</h1>
                 </div>
             </div>
         </div>
@@ -228,12 +228,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/js/">
-                                <span class="chip bg-color">js</span>
+                            <a href="/tags/vue/">
+                                <span class="chip bg-color">vue</span>
                             </a>
                         
-                            <a href="/tags/es6/">
-                                <span class="chip bg-color">es6</span>
+                            <a href="/tags/%E6%8F%92%E4%BB%B6/">
+                                <span class="chip bg-color">插件</span>
                             </a>
                         
                     </div>
@@ -244,8 +244,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/js/" class="post-category">
-                                js
+                            <a href="/categories/vue%E6%8F%92%E4%BB%B6/" class="post-category">
+                                vue插件
                             </a>
                         
                     </div>
@@ -257,7 +257,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2018-12-25
+                    2019-01-07
                 </div>
                 
 
@@ -273,132 +273,545 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="promise"><a href="#promise" class="headerlink" title="promise"></a>promise</h1><h2 id="1、什么是Promise？"><a href="#1、什么是Promise？" class="headerlink" title="1、什么是Promise？"></a>1、什么是Promise？</h2><p><code>Promise</code> 是异步编程的一种解决方案，是一个构造函数，自己身上有all、reject、resolve这几个方法，原型上有then、catch等方法。</p>
-<h2 id="2、Promise的状态"><a href="#2、Promise的状态" class="headerlink" title="2、Promise的状态"></a>2、Promise的状态</h2><p><code>Promise</code> 有三个状态（ <code>Pending</code> ,<code>Fulfilled</code>, <code>Rejected</code> ）</p>
-<p>一个Promise例子：</p>
-<pre><code>var promise = new Promise(function(resolve, reject) {
-if (/* 异步操作成功 */){
-resolve(value);
-} else {
-reject(error);
-}
-});
+                <h1 id="基于vue的时段选择器"><a href="#基于vue的时段选择器" class="headerlink" title="基于vue的时段选择器"></a>基于vue的时段选择器</h1><p>最近在项目中遇到一个需求，需要在每周的七天中用拖动选择多个时间段用来投放广告，网上没有找到类似的，于是手写了一个vue的时段选择器，见下：</p>
+<p>效果</p>
+<p><img src="/images/blogImgs/timePicker.png" alt="时段选择器" title="时段选择器"></p>
+<p>代码：</p>
+<pre><code>&lt;template&gt;
+&lt;div class=&quot;byted-weektime&quot;&gt;
+    &lt;div class=&quot;calendar&quot;&gt;
+    &lt;!-- &lt;div class=&quot;schedule&quot;&gt;&lt;/div&gt; --&gt;
+    &lt;!-- &lt;div class=&quot;schedule&quot; style=&quot;opacity: 0; display: none; left: 680px; top: 294px; width: 11px; height: 30px;&quot;&gt;&lt;/div&gt; --&gt;
+    &lt;table class=&quot;calendar-table&quot; style=&quot;width:610px&quot;&gt;
+        &lt;thead class=&quot;calendar-head&quot;&gt;
+        &lt;tr&gt;
+            &lt;th rowspan=&quot;6&quot; class=&quot;week-td&quot;&gt;星期/时间&lt;/th&gt;
+            &lt;th colspan=&quot;24&quot;&gt;00:00 - 12:00&lt;/th&gt;
+            &lt;th colspan=&quot;24&quot;&gt;12:00 - 24:00&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan=&quot;2&quot; v-for=&quot;index in tableHeader&quot; :key=&quot;index&quot;&gt;{{index}}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;!-- &lt;tbody @mousemove.prevent.stop=&quot;kuangMove&quot; @mouseleave.prevent.stop=&quot;kuangLeave&quot; @mousedown.prevent.stop=&quot;kuangDown&quot; @mouseup.prevent.stop=&quot;kuangUp&quot;&gt; --&gt;
+        &lt;!-- 不画框,没bug --&gt;
+        &lt;tbody id=&quot;tableBody&quot;&gt;
+        &lt;div
+            id=&quot;kuang&quot;
+            :style=&quot;{width:kuangObj.width+&#39;px&#39;,height:kuangObj.height+&#39;px&#39;,top:kuangObj.top+&#39;px&#39;,left:kuangObj.left+&#39;px&#39;,bottom:kuangObj.bottom+&#39;px&#39;,right:kuangObj.right+&#39;px&#39;}&quot;
+        &gt;&lt;/div&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期一&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,0)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,0)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[0]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期二&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,1)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,1)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[1]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期三&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,2)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,2)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[2]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期四&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,3)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,3)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[3]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期五&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,4)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,4)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[4]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期六&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,5)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,5)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[5]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;星期日&lt;/td&gt;
+            &lt;td
+            @mousedown.prevent=&quot;handleMouseDown(i,6)&quot;
+            @mouseup.prevent=&quot;handleMouseUp(i,6)&quot;
+            class=&quot;calendar-atom-time&quot;
+            :key=&quot;i&quot;
+            :class=&quot;item.class&quot;
+            v-for=&quot;(item,i) in rowUnit[6]&quot;
+            &gt;&lt;/td&gt;
+        &lt;/tr&gt;
 
-promise.then(function(value) {
-// success  resolve()
-}, function(value) {
-// failure reject()
-});</code></pre><p>1、<code>Pending</code> : 进行中</p>
-<p>2、<code>Fulfilled</code> : 已完成</p>
-<p>3、<code>Rejected</code> : 已失败</p>
-<h2 id="3、Promise的基本api"><a href="#3、Promise的基本api" class="headerlink" title="3、Promise的基本api"></a>3、Promise的基本api</h2><p>1、<code>Promise.resolve()</code></p>
-<p>将Promise对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；</p>
-<p>2、<code>Promise.reject()</code></p>
-<p>将Promise对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。</p>
-<pre><code>function getNumber(){
-    return new Promise(function(resolve, reject){
-        //做一些异步操作
-        setTimeout(function(){
-            var num = Math.ceil(Math.random()*10); //生成1-10的随机数
-            if(num&lt;=5){
-                resolve(num);
+        &lt;tr&gt;
+            &lt;td colspan=&quot;49&quot; class=&quot;td-table-tip&quot;&gt;
+            &lt;div class=&quot;clearfix&quot;&gt;
+                &lt;span class=&quot;pull-left tip-text&quot;&gt;请用鼠标点选时间段&lt;/span&gt;
+                &lt;a @click=&quot;clear&quot; class=&quot;pull-right&quot;&gt;清空&lt;/a&gt;
+            &lt;/div&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td colspan=&quot;49&quot; class=&quot;timeContent&quot;&gt;
+            &lt;div :key=&quot;index&quot; v-for=&quot;(item,index) in timeStr&quot; v-show=&quot;item.length&quot;&gt;
+                &lt;span&gt;{{weekDate[index+1]}}:&lt;/span&gt;
+                &lt;strong&gt;
+                &lt;span&gt;{{item}}&lt;/span&gt;
+                &lt;/strong&gt;
+            &lt;/div&gt;
+            &lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/template&gt;
+
+&lt;script&gt;
+export default {
+name: &#39;timeSelect&#39;,
+props: [&#39;value&#39;],
+data() {
+    return {
+    tableHeader: [
+        &#39;00&#39;,
+        &#39;01&#39;,
+        &#39;02&#39;,
+        &#39;03&#39;,
+        &#39;04&#39;,
+        &#39;05&#39;,
+        &#39;06&#39;,
+        &#39;07&#39;,
+        &#39;08&#39;,
+        &#39;09&#39;,
+        &#39;10&#39;,
+        &#39;11&#39;,
+        &#39;12&#39;,
+        &#39;13&#39;,
+        &#39;14&#39;,
+        &#39;15&#39;,
+        &#39;16&#39;,
+        &#39;17&#39;,
+        &#39;18&#39;,
+        &#39;19&#39;,
+        &#39;20&#39;,
+        &#39;21&#39;,
+        &#39;22&#39;,
+        &#39;23&#39;
+    ],
+    weekDate: {
+        &#39;1&#39;: &#39;星期一&#39;,
+        &#39;2&#39;: &#39;星期二&#39;,
+        &#39;3&#39;: &#39;星期三&#39;,
+        &#39;4&#39;: &#39;星期四&#39;,
+        &#39;5&#39;: &#39;星期五&#39;,
+        &#39;6&#39;: &#39;星期六&#39;,
+        &#39;7&#39;: &#39;星期日&#39;
+    },
+    rowUnit: [
+        //每一个单元格
+        //[{class:null,timeData:0},{class:null,timeData:1}...]  星期一
+    ],
+    timeContent: [
+        //选中的时间段原始数据
+        //{arr:[]},{arr:[]}...
+    ],
+    timeSection: [
+        //时间段,可以返回给后端的数据
+        // [
+        //     [0,1,2,3],[7,8]    =&gt; [0,2],[3.5,4.5]
+        // ],
+        // [
+        //     [4,5,6],[10]       =&gt; [2,3.5],[5,5.5]
+        // ]
+    ],
+    timeStr: [
+        //时间段,前端显示的数据
+        // &#39;00:00~02:00 | 03:30~04:30&#39;,
+        // &#39;02:00~03:30 | 05:00~05:30&#39;,
+        // &#39;&#39;,
+        // &#39;&#39;,
+        // &#39;&#39;,
+        // &#39;&#39;,
+        // &#39;&#39;
+    ],
+    beginDay: 0,
+    beginTime: 0,
+    downEvent: false,
+    kuangObj: {
+        width: 0,
+        height: 0,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        oldLeft: 0,
+        oldTop: 0,
+        flag: false
+    }
+    }
+},
+created() {
+    this.init()
+},
+watch: {
+    timeContent: {
+    handler(cur) {
+        let data = cur.map(item =&gt; {
+        let arr = []
+        for (let i = 0; i &lt; 48; i++) {
+            arr[i] = {
+            class: item.includes(i) ? &#39;ui-selected&#39; : null,
+            timeData: i
             }
-            else{
-                reject(&quot;数字太大了&quot;);
+        }
+        return arr
+        })
+        let inputData = cur.map(i =&gt; {
+        return i.join(&#39;,&#39;)
+        })
+        this.$emit(&#39;input&#39;, inputData)
+        this.rowUnit = data
+    },
+    deep: true
+    }
+},
+mounted() {
+    //画框程序
+    // let oBox = document.getElementById(&quot;tableBody&quot;)
+    // let oDiv = document.getElementById(&quot;kuang&quot;)
+    //  //鼠标按下，获取初始点
+    // oBox.onmousedown = function (ev) {
+    //       var x1 = ev.clientX - oBox.offsetLeft;
+    //       var y1 = ev.clientY - oBox.offsetTop;
+    //       oBox.onmousemove = function (ev) {
+    //      var x2 = ev.clientX - oBox.offsetLeft;
+    //      var y2 = ev.clientY - oBox.offsetTop;
+    //      //3.设置div的样式
+    //      oDiv.style.left = (x2 &gt; x1 ? x1 : x2) +&quot;px&quot;;
+    //      oDiv.style.top = (y2 &gt; y1 ? y1 : y2) +&quot;px&quot;;
+    //      oDiv.style.width = Math.abs(x2-x1)+&quot;px&quot;;
+    //      oDiv.style.height =Math.abs(y2-y1)+&quot;px&quot;;
+    //      }
+    //   return false;  //解除在划动过程中鼠标样式改变的BUG
+    // }
+    // //在鼠标抬起后终止onmousemove事件
+    //     document.onmouseup = function () {
+    //    oBox.onmousemove = null;
+    //    oDiv.style.left = 0 +&quot;px&quot;;
+    //    oDiv.style.top = 0 +&quot;px&quot;;
+    //    oDiv.style.width = 0+&quot;px&quot;;
+    //    oDiv.style.height =0+&quot;px&quot;;
+    //     }
+},
+methods: {
+    getTime() {
+    return this.timeContent.map(i =&gt; {
+        return i.join(&#39;,&#39;)
+    })
+    },
+    init() {
+    if (this.value.length &lt; 1) {
+        for (let i = 0; i &lt; 7; i++) {
+        this.timeContent.push([])
+        }
+    } else {
+        this.timeContent = this.value.map(i =&gt; (i == &#39;&#39; ? [] : i.split(&#39;,&#39;).map(item =&gt; Number(item))))
+    }
+    for (let i = 0; i &lt; 7; i++) {
+        this.timeStr.push(&#39;&#39;)
+    }
+    // for (let i = 0; i &lt; 7; i++) {
+    //   let arr = []
+    //   for (let j = 0; j &lt; 48; j++) {
+    //     arr.push({ class: null, timeData: j })
+    //   }
+    //   // this.rowUnit.push(arr)
+    //   this.timeContent=[]
+    //   this.timeSection.push([])
+    //   this.timeStr.push(&#39;&#39;)
+    // }
+    },
+
+    handleMouseDown(i, day) {
+    this.downEvent = true //按下时鼠标不在范围内则不算
+    this.beginDay = day
+    this.beginTime = i
+    },
+    handleMouseUp(i, day) {
+    //当点击事件是在table内才触发选取数据操作
+    Array.prototype.remove = function(val) {
+        var index = this.indexOf(val)
+        if (index &gt; -1) {
+        this.splice(index, 1)
+        }
+    }
+    if (this.downEvent) {
+        //选时间段
+        let _this = this
+        let begin = this.beginTime
+        let start = begin &lt;= i ? begin : i //x轴 起点
+        let length = Math.abs(begin - i)
+        let end = start + length //x轴 终点
+
+        let dayStart = this.beginDay &lt;= day ? this.beginDay : day //y轴 起点
+        let dayLength = Math.abs(this.beginDay - day)
+        let dayEnd = dayStart + dayLength //y轴 终点
+
+        //当框选范围内所有块都是选中状态时,执行反选
+        function isAdd() {
+        for (let x = dayStart; x &lt; dayEnd + 1; x++) {
+            for (let y = start; y &lt; end + 1; y++) {
+            if (_this.rowUnit[x][y].class == null) return true
             }
-        }, 2000);
-    });           
+        }
+        return false
+        }
+
+        if (isAdd()) {
+        //没选中的全都选上
+        for (let x = dayStart; x &lt; dayEnd + 1; x++) {
+            for (let y = start; y &lt; end + 1; y++) {
+            if (this.rowUnit[x][y].class == null) {
+                // this.rowUnit[x][y].class = &#39;ui-selected&#39;
+                this.timeContent[x].push(this.rowUnit[x][y].timeData)
+            }
+            }
+        }
+        } else {
+        //反选
+        for (let x = dayStart; x &lt; dayEnd + 1; x++) {
+            for (let y = start; y &lt; end + 1; y++) {
+            // this.rowUnit[x][y].class = null
+            this.timeContent[x].remove(this.rowUnit[x][y].timeData)
+            }
+        }
+        }
+        //过滤时间段,将临近的时间段合并
+        this.filterTime(dayStart, dayEnd)
+    }
+    this.downEvent = false
+    // console.log(JSON.stringify(this.timeContent))
+    },
+    filterTime(start, end) {
+    //选中的x,y坐标信息 x:0-47  y:0-6
+    function sortCut(arr) {
+        //提取连续的数字
+        var result = []
+        arr.forEach(function(v, i) {
+        var temp = result[result.length - 1]
+        if (!i) {
+            result.push([v])
+        } else if (v % 1 === 0 &amp;&amp; v - temp[temp.length - 1] == 1) {
+            temp.push(v)
+        } else {
+            result.push([v])
+        }
+        })
+        return result
+    }
+    function toStr(num) {
+        if (Number.isInteger(num)) {
+        let str = num &lt; 10 ? &#39;0&#39; + num : num.toString()
+        return str + &#39;:00&#39;
+        } else {
+        let str = Math.floor(num) &lt; 10 ? &#39;0&#39; + Math.floor(num) : Math.floor(num).toString()
+        return str + &#39;:30&#39;
+        }
+    }
+    function timeToStr(arr) {
+        //把数组转成方便人看到字符串
+        let str = &#39;&#39;
+        arr.forEach((arr, index) =&gt; {
+        let str1 = &#39;&#39;
+        if (index == 0) {
+            str1 = toStr(arr[0]) + &#39;~&#39; + toStr(arr[1])
+        } else {
+            str1 = &#39; , &#39; + toStr(arr[0]) + &#39;~&#39; + toStr(arr[1])
+        }
+        str += str1
+        })
+        return str
+    }
+    //排序,分割成
+    for (let i = start; i &lt; end + 1; i++) {
+        let arr1 = sortCut(this.timeContent[i].sort((a, b) =&gt; a - b))
+        let arr2 = []
+        arr1.forEach(arr =&gt; {
+        //转成带小数点的时间段,以及供前端显示的字符串
+        let arr3 = []
+        arr3.push(arr[0] / 2)
+        arr3.push(arr[arr.length - 1] / 2 + 0.5)
+        arr2.push(arr3)
+        })
+        //console.log(arr2)
+        this.timeStr[i] = timeToStr(arr2)
+        // this.timeSection[i] = arr2
+    }
+    // console.log(this.timeSection)
+    },
+    clear() {
+    this.rowUnit.forEach(item =&gt; {
+        item.forEach(item1 =&gt; {
+        item1.class = null
+        })
+    })
+    this.timeContent.forEach(item =&gt; {
+        item.length = 0
+    })
+    // this.timeSection.forEach(item =&gt; {
+    //   //赋值成空数组[]出问题
+    //   item.length = 0
+    // })
+    //遍历赋值成&#39;&#39;,不管用
+    this.timeStr.length = 0
+    for (let i = 0; i &lt; 7; i++) {
+        this.timeStr.push(&#39;&#39;)
+    }
+    //this.initState = true
+    },
+    //画框操作
+    kuangMove() {
+    if (!this.kuangObj.flag) return
+    if (this.downEvent) {
+        let x1 = this.kuangObj.oldLeft
+        let y1 = this.kuangObj.oldTop
+        let x2 = event.layerX
+        let y2 = event.layerY
+        this.kuangObj.left = x2 &gt; x1 ? x1 : x2
+        this.kuangObj.top = y2 &gt; y1 ? y1 : y2
+        this.kuangObj.width = Math.abs(x2 - x1)
+        this.kuangObj.height = Math.abs(y2 - y1)
+    }
+    },
+    kuangDown() {
+    this.kuangObj.flag = true
+    this.kuangObj.oldLeft = event.layerX
+    this.kuangObj.oldTop = event.layerY
+    },
+    kuangUp() {
+    this.kuangObj.flag = false
+    this.clearDragData()
+    },
+    kuangLeave() {
+    this.kuangObj.flag = false
+    this.clearDragData()
+    },
+    clearDragData() {
+    for (let prop in this.kuangObj) {
+        this.kuangObj[prop] = 0
+    }
+    }
 }
-getNumber()
-.then(
-    (data)=&gt;{
-        console.log(&quot;resolved&quot;);
-        console.log(data);
-    }, 
-    (reason, data)=&gt;{
-        console.log(&quot;rejected&quot;);
-        console.log(reason);
-    }
-);</code></pre><p>getNumber函数用来异步获取一个数字，2秒后执行完成，如果数字小于等于5，我们认为是“成功”了，调用resolve修改Promise的状态。否则我们认为是“失败”了，调用reject并传递一个参数，作为失败的原因。</p>
-<p>运行getNumber并且在then中传了两个参数，then方法可以接受两个参数，第一个对应resolve的回调，第二个对应reject的回调。所以我们能够分别拿到他们传过来的数据。多次运行这段代码，你会随机得到下面两种结果：</p>
-<pre><code>    resolved
-    1</code></pre><p>或者</p>
-<pre><code>    rejected
-    数字太大了</code></pre><p>3、<code>Promise.prototype.then()</code></p>
-<p>Promise完成后执行then回调</p>
-<p>4、<code>Promise.prototype.catch()</code></p>
-<p>捕获Promise执行过程中的异常</p>
-<p>我们知道Promise对象除了then方法，还有一个catch方法，它是做什么用的呢？其实它和then的第二个参数一样，用来指定reject的回调，用法是这样：</p>
-<pre><code>getNumber()
-.then(function(data){
-    console.log(&quot;resolved&quot;);
-    console.log(data);
-})
-.catch(function(reason){
-    console.log(&quot;rejected&quot;);
-    console.log(reason);
-});</code></pre><p>效果和写在then的第二个参数里面一样。不过它还有另外一个作用：在执行resolve的回调（也就是上面then中的第一个参数）时，如果抛出异常了（代码出错了），那么并不会报错卡死js，而是会进到这个catch方法中。请看下面的代码：</p>
-<pre><code>getNumber()
-.then(function(data){
-    console.log(&quot;resolved&quot;);
-    console.log(data);
-    console.log(somedata); //此处的somedata未定义
-})
-.catch(function(reason){
-    console.log(&quot;rejected&quot;);
-    console.log(reason);
-});</code></pre><p>在resolve的回调中，我们console.log(somedata);而somedata这个变量是没有被定义的。如果我们不用Promise，代码运行到这里就直接在控制台报错了，不往下运行了。但是在这里，会得到这样的结果：</p>
-<pre><code>resolved
-4
-rejected
-ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到catch方法里面去了，而且把错误原因传到了reason参数中。即便是有错误的代码也不会报错了，这与我们的try/catch语句有相同的功能。</p>
-<p>5、<code>Promise.all()</code></p>
-<p>将多个Promise包装成一个Promise，待所有的Promise完成后，得到一个数组，如果有任意一个失败，该Promise失败，返回值是第一个失败的子Promise的结果</p>
-<pre><code>//切菜
-    function cutUp(){
-        console.log(&#39;开始切菜。&#39;);
-        var p = new Promise(function(resolve, reject){        //做一些异步操作
-            setTimeout(function(){
-                console.log(&#39;切菜完毕！&#39;);
-                resolve(&#39;切好的菜&#39;);
-            }, 1000);
-        });
-        return p;
-    }
+}
+&lt;/script&gt;
 
-    //烧水
-    function boil(){
-        console.log(&#39;开始烧水。&#39;);
-        var p = new Promise(function(resolve, reject){        //做一些异步操作
-            setTimeout(function(){
-                console.log(&#39;烧水完毕！&#39;);
-                resolve(&#39;烧好的水&#39;);
-            }, 1000);
-        });
-        return p;
-    }
-
-    Promise.all([cutUp(), boil()])
-        .then((result) =&gt; {
-            console.log(&#39;准备工作完毕&#39;);
-            console.log(result);
-        })</code></pre><p>6、<code>Promise.race()</code></p>
-<p>完成其中一个</p>
-<pre><code>let p1 = new Promise(resolve =&gt; {
-        setTimeout(() =&gt; {
-            resolve(&#39;I\`m p1 &#39;)
-        }, 1000)
-    });
-    let p2 = new Promise(resolve =&gt; {
-        setTimeout(() =&gt; {
-            resolve(&#39;I\`m p2 &#39;)
-        }, 2000)
-    });
-    Promise.race([p1, p2])
-        .then(value =&gt; {
-            console.log(value)
-        })</code></pre><p>常见用法：<br>异步操作和定时器放在一起，，如果定时器先触发，就认为超时，告知用户；<br>例如我们要从远程的服务家在资源如果5000ms还没有加载过来我们就告知用户加载失败</p>
-
+&lt;style scoped&gt;
+.byted-weektime .calendar {
+-webkit-user-select: none;
+position: relative;
+display: inline-block;
+}
+/*.byted-weektime .calendar .schedule{background:#2F88FF;width:0;height:0;position:fixed;display:none;top:0;left:0;pointer-events:none;-webkit-transition:all 400ms ease;-moz-transition:all 400ms ease;-ms-transition:all 400ms ease;transition:all 400ms ease}*/
+.byted-weektime .calendar .calendar-table {
+border-collapse: collapse;
+border-radius: 4px;
+}
+.byted-weektime .calendar .calendar-table tr .calendar-atom-time:hover {
+background: #ccc;
+}
+.byted-weektime .calendar .calendar-table tr .ui-selected {
+background: #2f88ff;
+}
+.byted-weektime .calendar .calendar-table tr .ui-selected:hover {
+background: #2f88ff;
+}
+.byted-weektime .calendar .calendar-table tr,
+.byted-weektime .calendar .calendar-table td,
+.byted-weektime .calendar .calendar-table th {
+border: 1px solid #ccc;
+font-size: 12px;
+text-align: center;
+min-width: 11px;
+line-height: 1.8em;
+-webkit-transition: background 200ms ease;
+-moz-transition: background 200ms ease;
+-ms-transition: background 200ms ease;
+transition: background 200ms ease;
+}
+.byted-weektime .calendar .calendar-table tbody tr {
+height: 30px;
+}
+.byted-weektime .calendar .calendar-table tbody tr td:first-child {
+background: #f8f9fa;
+}
+.byted-weektime .calendar .calendar-table thead th,
+.byted-weektime .calendar .calendar-table thead td {
+background: #f8f9fa;
+}
+.byted-weektime .calendar .calendar-table .td-table-tip {
+line-height: 2.4em;
+padding: 0 12px 0 19px;
+background: #fff !important;
+}
+.byted-weektime .calendar .calendar-table .td-table-tip .clearfix {
+height: 46px;
+line-height: 46px;
+}
+.byted-weektime .calendar .calendar-table .td-table-tip .pull-left {
+font-size: 14px;
+color: #333333;
+}
+.byted-weektime .week-td {
+width: 75px;
+padding: 20px 0;
+}
+.byted-weektime a {
+cursor: pointer;
+color: #2f88ff;
+font-size: 14px;
+}
+#kuang {
+position: absolute;
+background-color: blue;
+opacity: 0.3;
+}
+&lt;/style&gt;</code></pre>
             </div>
             <hr/>
 
@@ -423,7 +836,7 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://yoursite.com/2018/12/25/promise/">http://yoursite.com/2018/12/25/promise/</a>
+                    <a href="http://yoursite.com/2019/01/07/ji-yu-vue-de-shi-duan-xuan-ze-qi/">http://yoursite.com/2019/01/07/ji-yu-vue-de-shi-duan-xuan-ze-qi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -461,12 +874,12 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/js/">
-                                    <span class="chip bg-color">js</span>
+                                <a href="/tags/vue/">
+                                    <span class="chip bg-color">vue</span>
                                 </a>
                             
-                                <a href="/tags/es6/">
-                                    <span class="chip bg-color">es6</span>
+                                <a href="/tags/%E6%8F%92%E4%BB%B6/">
+                                    <span class="chip bg-color">插件</span>
                                 </a>
                             
                         </div>
@@ -634,9 +1047,10 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2019/01/07/ji-yu-vue-de-shi-duan-xuan-ze-qi/">
                     <div class="card-image">
@@ -653,9 +1067,9 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2019-01-07
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-01-07
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -668,6 +1082,7 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -690,23 +1105,23 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2018/10/05/js-array/">
+                <a href="/2018/12/25/promise/">
                     <div class="card-image">
                         
-                        <img src="/images/featureimages/1.jpg" class="responsive-img" alt="js-array">
+                        <img src="/images/featureimages/2.jpg" class="responsive-img" alt="promise">
                         
-                        <span class="card-title">js-array</span>
+                        <span class="card-title">promise</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            js中数组的一些方法
+                            promise的用法
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2018-10-05
+                                <i class="far fa-clock fa-fw icon-date"></i>2018-12-25
                             </span>
                         <span class="publish-author">
                             
@@ -727,8 +1142,8 @@ ReferenceError:somedata is not defined(...)</code></pre><p>也就是说进到cat
                         <span class="chip bg-color">js</span>
                     </a>
                     
-                    <a href="/tags/%E6%95%B0%E7%BB%84/">
-                        <span class="chip bg-color">数组</span>
+                    <a href="/tags/es6/">
+                        <span class="chip bg-color">es6</span>
                     </a>
                     
                 </div>
